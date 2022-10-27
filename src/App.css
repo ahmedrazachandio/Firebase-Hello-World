@@ -9,10 +9,34 @@ body {
   background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1964&q=80');
   background-size: cover;
 }
+.mainPost{
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center; 
+  justify-content: center;
+}
 
 
+.post{
+  width: 50%;
+  height: auto;
+  background-color: #61dafb;
+  /* display: flex; */
+  /* flex-direction: row; */
+  /* From https://css.glass */
+/* From https://css.glass */
+/* From https://css.glass */
+/* From https://css.glass */
+background: rgba(255, 255, 255, 0.66);
+border-radius: 16px;
+box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+backdrop-filter: blur(6px);
+-webkit-backdrop-filter: blur(6px);
+border: 1px solid rgba(255, 255, 255, 0.78);
 
+  margin-top: 10px;
 
+}
 .App {
   text-align: center;
 }

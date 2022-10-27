@@ -5,13 +5,10 @@ import moment from 'moment';
 
 import { initializeApp } from "firebase/app";
 import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs,
-  doc,
-  onSnapshot,
-  query,
+  getFirestore,collection,
+  addDoc,getDocs,
+  doc,onSnapshot,
+  query,serverTimestamp,orderBy,
 } from "firebase/firestore";
 
 
@@ -51,13 +48,6 @@ function App() {
         querySnapshot.forEach((doc) => {
           console.log(`${doc.id} => `,  doc.data());
 
-
-
-          
-
-
-
-          
           setPosts((prev) =>{
             let newArray = [...prev, doc.data()];
             return newArray;
@@ -66,13 +56,14 @@ function App() {
         });
       }
       // getData();
-
+      let unsubscribe = null;
       const getRealtimeData = async () => {
-        const q = query(collection(db, "posts"));
-            const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const q = query(collection(db, "posts"), orderBy("createdOn","desc"));
+            unsubscribe = onSnapshot(q, (querySnapshot) => {
               const posts = [];
               querySnapshot.forEach((doc) => {
                   posts.push(doc.data());
+                  // posts.unshift(doc.data());
               });
 
             setPosts(posts);    
@@ -84,6 +75,11 @@ function App() {
         
       } 
       getRealtimeData();
+
+      return () =>{
+        console.log("cleanup function");
+        unsubscribe();
+      }
 
 
   
@@ -99,7 +95,9 @@ function App() {
         const docRef = await addDoc(collection(db, "posts"), {
           text: postText,
           parag: para,
-          createdOn: new Date().getTime(),
+          // createdOn: new Date().getTime(),
+          createdOn: serverTimestamp(),
+          
         });
         console.log("Document written with ID: ", docRef.id);
       } catch (e) {
@@ -133,7 +131,7 @@ return (
           <button type='submit'>Save Post</button>
 
       </form>
-      <div>
+      <div className='mainPost'>
         {(isLoading) ? "loading..." : ""}
 
         {posts.map((eachPost, i) => (
@@ -148,7 +146,7 @@ return (
 
             <p>{eachPost?.parag}</p>
             <span>{
-              moment(eachPost?.sdfjsdfjsd)
+              moment(eachPost?.createdOn?.secounds)
                 .format('Do MMMM, h:mm a')
             }</span>
 
