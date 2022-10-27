@@ -38,6 +38,7 @@ const db = getFirestore(app);
 function App() {
 
     const[postText, setPostText] = useState("");
+    const[para, setPara] = useState("");
     const[posts, setPosts] = useState([]);
     const[isLoading, setIsloading] = useState(false);
   
@@ -51,12 +52,39 @@ function App() {
           console.log(`${doc.id} => `,  doc.data());
 
 
-          let newArray = [...posts, doc.data()];
+
           
-          setPosts(newArray);
+
+
+
+          
+          setPosts((prev) =>{
+            let newArray = [...prev, doc.data()];
+            return newArray;
+            
+          });
         });
       }
-      getData();
+      // getData();
+
+      const getRealtimeData = async () => {
+        const q = query(collection(db, "posts"));
+            const unsubscribe = onSnapshot(q, (querySnapshot) => {
+              const posts = [];
+              querySnapshot.forEach((doc) => {
+                  posts.push(doc.data());
+              });
+
+            setPosts(posts);    
+
+
+              console.log("posts: ", posts);
+
+            });
+        
+      } 
+      getRealtimeData();
+
 
   
     },[])
@@ -70,6 +98,7 @@ function App() {
       try {
         const docRef = await addDoc(collection(db, "posts"), {
           text: postText,
+          parag: para,
           createdOn: new Date().getTime(),
         });
         console.log("Document written with ID: ", docRef.id);
@@ -92,28 +121,39 @@ return (
             setPostText(e.target.value)
           }}
           />
+          <br />
+          <textarea
+          type="text"
+          placeholder='add your paragraph ....'
+          onChange={(e) => {
+            setPara(e.target.value)
+          }}
+          />
+          <br />
           <button type='submit'>Save Post</button>
 
       </form>
       <div>
         {(isLoading) ? "loading..." : ""}
 
-        {posts.map(eachPost => (
-          <div className="post" key={eachPost?.createdOn}>
-            <img src='https://avatars.githubusercontent.com/u/86877851?s=400&u=29c92d79043f506ee35a390b12953fd998b5402a&v=4'/>
+        {posts.map((eachPost, i) => (
+          <div className="post" key={i}>
+
+          
+            {/* <img src='https://avatars.githubusercontent.com/u/86877851?s=400&u=29c92d79043f506ee35a390b12953fd998b5402a&v=4'/> */}
 
             <h3 className="title">
               {eachPost?.text}
             </h3>
 
+            <p>{eachPost?.parag}</p>
             <span>{
               moment(eachPost?.sdfjsdfjsd)
                 .format('Do MMMM, h:mm a')
             }</span>
 
-            {/* <h3>{eachPost?.description}</h3>
 
-            <img src={
+           {/* <img src={
               eachPost?.image?.thumbnail?.contentUrl
                 .replace("&pid=News", "")
                 .replace("pid=News&", "")
