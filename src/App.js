@@ -8,7 +8,7 @@ import {
   getFirestore,collection,
   addDoc,getDocs,
   doc,onSnapshot,
-  query,serverTimestamp,orderBy,
+  query,serverTimestamp,orderBy,deleteDoc ,
 } from "firebase/firestore";
 
 
@@ -62,8 +62,16 @@ function App() {
             unsubscribe = onSnapshot(q, (querySnapshot) => {
               const posts = [];
               querySnapshot.forEach((doc) => {
+                posts.unshift(doc.data());
+                  // posts.push(doc.data());
+                  let data = doc.data();
+                  data.id = doc.id;
+
+
+
+
+
                   posts.push(doc.data());
-                  // posts.unshift(doc.data());
               });
 
             setPosts(posts);    
@@ -103,6 +111,12 @@ function App() {
       } catch (e) {
         console.error("Error adding document: ", e);
       }
+    }
+
+    const deletePosts = async (postsId) => {
+      await deleteDoc(doc(db, "posts", postsId));
+
+
     }
 
 return (
@@ -149,6 +163,11 @@ return (
               moment(eachPost?.createdOn?.secounds)
                 .format('Do MMMM, h:mm a')
             }</span>
+
+            <br />
+            <button onClick={() => {
+              deletePosts(eachPost?.id)
+            }}>Delete</button>
 
 
            {/* <img src={
