@@ -32,7 +32,7 @@ const db = getFirestore(app);
 
 
 
-function App() {
+function App(props) {
 
     const[postText, setPostText] = useState("");
     const[para, setPara] = useState("");
@@ -152,9 +152,14 @@ return (
           <div className="post" key={i}>
 
           
-            {/* <img src='https://avatars.githubusercontent.com/u/86877851?s=400&u=29c92d79043f506ee35a390b12953fd998b5402a&v=4'/> */}
+            <img src='https://avatars.githubusercontent.com/u/86877851?s=400&u=29c92d79043f506ee35a390b12953fd998b5402a&v=4'/>
 
-            <h3 className="title">
+            <span>
+            {moment(props?.postDate?.seconds * 1000 || undefined)
+              .fromNow()
+            }
+              {/* .format("D MMM, h:mm a") */}
+          </span><h3 className="title">
               {eachPost?.text}
             </h3>
 
@@ -163,13 +168,18 @@ return (
               moment(eachPost?.createdOn?.secounds)
                 .format('Do MMMM, h:mm a')
             }</span>
-
+            <br />
+            <br />
             <br />
             <button onClick={() => {
               deletePosts(eachPost?.id)
+            }}>Edit</button>
+            <button onClick={() => {
+              deletePosts(eachPost?.id)
             }}>Delete</button>
-
-
+            <br />
+            <br />
+            <br />
            {/* <img src={
               eachPost?.image?.thumbnail?.contentUrl
                 .replace("&pid=News", "")
