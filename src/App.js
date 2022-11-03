@@ -181,7 +181,7 @@ return (
           <div className="post" key={i}>
 
           
-            <img src='https://avatars.githubusercontent.com/u/86877851?s=400&u=29c92d79043f506ee35a390b12953fd998b5402a&v=4'/>
+            {/* <img src='https://avatars.githubusercontent.com/u/86877851?s=400&u=29c92d79043f506ee35a390b12953fd998b5402a&v=4'/> */}
 
             <span>
             {moment(props?.postDate?.seconds * 1000 || undefined)
@@ -221,6 +221,17 @@ return (
               <input
                 type="text"
                 value={editing.editingText}
+                onChange={(e) => {
+                  setEditing({
+                    ...editing,
+                    editingText: e.target.value,
+                  });
+                }}
+                placeholder="please enter updated value"
+              />
+              <textarea
+                type="text"
+                value={editing.para}
                 onChange={(e) => {
                   setEditing({
                     ...editing,
