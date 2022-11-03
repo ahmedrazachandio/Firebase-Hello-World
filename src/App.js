@@ -8,7 +8,7 @@ import {
   getFirestore,collection,
   addDoc,getDocs,
   doc,onSnapshot,
-  query,serverTimestamp,orderBy,deleteDoc ,
+  query,serverTimestamp,orderBy,deleteDoc ,updateDoc,
 } from "firebase/firestore";
 
 
@@ -38,6 +38,11 @@ function App(props) {
     const[para, setPara] = useState("");
     const[posts, setPosts] = useState([]);
     const[isLoading, setIsloading] = useState(false);
+
+    const [editing, setEditing] = useState({
+      editingId: null,
+      editingText: "",
+    });
   
   
   
@@ -64,14 +69,10 @@ function App(props) {
               querySnapshot.forEach((doc) => {
                 posts.unshift(doc.data());
                   // posts.push(doc.data());
-                  let data = doc.data();
-                  data.id = doc.id;
+                  // let data = doc.data();
+                  // data.id = doc.id;
 
-
-
-
-
-                  posts.push(doc.data());
+                  posts.push({ id: doc.id, ...doc.data() });
               });
 
             setPosts(posts);    
@@ -97,6 +98,7 @@ function App(props) {
   
     const savePost = async (e) => {
       e.preventDefault();
+
       // console.log("PostText:", postText);
 
       try {
@@ -112,18 +114,45 @@ function App(props) {
         console.error("Error adding document: ", e);
       }
     }
+    
 
-    const deletePosts = async (postsId) => {
-      await deleteDoc(doc(db, "posts", postsId));
+    // const deletePost = async () => {
+    //   console.log("postId: ", props.id);
+  
+    //   await deleteDoc(doc(db, "posts", props.id));
+    // };
 
 
-    }
+
+
+    const deletePost = async (id) => {
+      console.log("postId: ", id);
+  
+      await deleteDoc(doc(db, "posts", id));
+    };
+
+
+    const updatePost = async (e) => {
+      e.preventDefault();
+  
+      await updateDoc(doc(db, "posts", editing.editingId), {
+        text: editing.editingText,
+      });
+  
+      setEditing({
+        editingId: null,
+        editingText: "",
+      });
+    };
+
+
+
 
 return (
     <div className="App">
       <h1>Firebase HelloWorld</h1>
      <h3>Social Media App</h3>
-
+     { (false) ? console.log("ahmad"):console.log("raza")   }
       <form onSubmit={savePost}>
           
         <input
@@ -171,12 +200,48 @@ return (
             <br />
             <br />
             <br />
-            <button onClick={() => {
-              deletePosts(eachPost?.id)
-            }}>Edit</button>
-            <button onClick={() => {
-              deletePosts(eachPost?.id)
-            }}>Delete</button>
+            <button onClick={() => deletePost(eachPost?.id)}>Delete</button>
+
+
+            {editing.editingId === props?.id ? null : (
+          <button
+            onClick={() => {
+              setEditing({
+                editingId: props?.id,
+                editingText: props?.postText,
+              });
+            }}
+          >
+            Edit
+          </button>
+        )}
+
+          {props.id === editing.editingId ? (
+            <form onSubmit={updatePost}>
+              <input
+                type="text"
+                value={editing.editingText}
+                onChange={(e) => {
+                  setEditing({
+                    ...editing,
+                    editingText: e.target.value,
+                  });
+                }}
+                placeholder="please enter updated value"
+              />
+              <button type="submit">Update</button>
+            </form>
+          ) : (
+            <p className="post" rel="noreferrer">
+              {props?.postText}
+
+              
+            </p>
+          )}
+
+
+
+
             <br />
             <br />
             <br />
