@@ -38,6 +38,9 @@ function App(props) {
     const[para, setPara] = useState("");
     const[posts, setPosts] = useState([]);
     const[isLoading, setIsloading] = useState(false);
+    const[images, setImages] = useState("");
+    const[imageUrl, setImageUrl] = useState("");
+
 
     const [editing, setEditing] = useState({
       editingId: null,
@@ -100,6 +103,30 @@ function App(props) {
       e.preventDefault();
 
       // console.log("PostText:", postText);
+
+
+      const data = new FormData()
+      data.append("file", images)
+      data.append("upload_preset", "profilePicture")
+      data.append("cloud_name", "dmpwlgidc")
+
+      fetch("https://api.cloudinary.com/v1_1/dmpwlgidc/image/upload", {
+        method:"post",
+        body:data
+      })
+
+      .then((res) => res.json()) 
+      .then((data) =>{
+        setImageUrl(data.url)
+        console.log("from then", data.url);
+    })
+    .catch(err => {
+        console.log("from catch", err);
+    })
+
+
+
+
 
       try {
         const docRef = await addDoc(collection(db, "posts"), {
@@ -170,6 +197,11 @@ return (
             setPara(e.target.value)
           }}
           />
+            <br />
+          <input type="file"
+           onChange={(e) =>setImages(e.target.files[0])}
+          />
+
           <br />
           <button type='submit'>Save Post</button>
 
@@ -197,6 +229,7 @@ return (
               moment(eachPost?.createdOn?.secounds)
                 .format('Do MMMM, h:mm a')
             }</span>
+            <img src={imageUrl} className="postImg" />
             <br />
             <br />
             <br />
@@ -246,7 +279,6 @@ return (
             <p className="post" rel="noreferrer">
               {props?.postText}
 
-              
             </p>
           )}
 
